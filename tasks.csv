@@ -1,0 +1,514 @@
+Title,Assignees,Body,Start Date,Due Date,Sprint,Status,Priority,Story Points,Labels,Dependencies
+PM-01: GitHub Project Setup,Erza,"## Goal
+Set up GitHub Project management infrastructure for the CollabAI distributed systems project.
+
+## Description
+Create and configure the GitHub Project board to track all project tasks across 3 sprints. This establishes the central hub for team collaboration, sprint planning, and work tracking.
+
+## Tasks
+- Create GitHub Project board with columns: To Do, In Progress, Review, Done
+- Configure automated workflows for issue transitions
+- Create and organize labels (backend, frontend, api, auth, db, testing, etc.)
+- Set up sprint milestones (Sprint 1, 2, 3)
+- Import all tasks with proper dependencies
+- Configure team access and permissions
+- Create project documentation and README
+
+## Acceptance Criteria
+- GitHub Project board is fully functional with all columns automated
+- All tasks are imported and properly labeled
+- Team members have appropriate access levels
+- Sprint milestones are created and linked
+- Dependencies are correctly mapped
+- Board is ready for Sprint 1 kickoff
+- Team can track progress in real-time
+
+## Story Points: 3",2026-04-27,2026-04-27,Sprint 1,To Do,High,3,"pm,github",
+ARCH-01: DRF + OOP Guidelines,Edonita,"## Goal
+Define backend architecture standards for Django REST Framework (DRF) and Object-Oriented Programming (OOP) principles.
+
+## Description
+Establish comprehensive architectural guidelines following OOP paradigms (Requirement #5). All backend code must use inheritance, polymorphism, encapsulation, and abstraction. This also ensures REST APIs follow DRF best practices (Requirement #4).
+
+## Tasks
+- Design Django app structure (apps, serializers, views, services, permissions)
+- Define OOP conventions (inheritance, composition, abstraction, encapsulation)
+- Create naming conventions for models, serializers, views, and endpoints
+- Establish permission and authentication patterns
+- Document middleware integration strategy
+- Create code organization best practices document
+- Design base classes and mixins for reusability
+- Create architectural diagram showing component relationships
+
+## Acceptance Criteria
+- Architecture document exists and covers OOP + DRF best practices
+- Base classes and mixins are defined for reuse
+- Backend skeleton is initialized
+- Conventions are clear for all team members
+- All backend tasks align with these guidelines
+
+## Key Requirements Covered
+✅ Requirement #4: RESTful API Framework
+✅ Requirement #5: OOP Programming
+
+## Story Points: 5
+## Dependencies: PM-01",2026-04-28,2026-04-29,Sprint 1,To Do,High,5,"backend,drf,oop",PM-01
+AUTH-01: Register API,Erza,"## Goal
+Implement user registration endpoint with validation and secure password handling.
+
+## Description
+Create the registration API endpoint that allows new users to create accounts. Endpoint follows REST over HTTP/HTTPS (Requirement #2) and DRF conventions.
+
+## Tasks
+- Create RegisterSerializer with email and password fields
+- Implement email uniqueness validation
+- Enforce strong password requirements
+- Hash passwords using Django's make_password utility
+- Create POST /api/auth/register endpoint (HTTP/HTTPS)
+- Return 201 with user data
+- Implement proper error responses
+- Write unit tests
+- Document endpoint in Swagger
+
+## Acceptance Criteria
+- User can register with valid credentials
+- Passwords are hashed and secure
+- Endpoint is RESTful over HTTP/HTTPS
+- Tests pass and Swagger docs exist
+
+## Key Requirements Covered
+✅ Requirement #2: HTTP/HTTPS Communication
+✅ Requirement #4: RESTful API Framework
+✅ Requirement #8: Authentication
+
+## Story Points: 5
+## Dependencies: ARCH-01",2026-04-30,2026-05-02,Sprint 1,To Do,High,5,"backend,auth",ARCH-01
+DB-01: Core Models,Leona,"## Goal
+Create foundational database models for the system architecture.
+
+## Description
+Build the core models that form the backbone of the application data structure, following OOP principles with base classes and inheritance.
+
+## Tasks
+- Create abstract BaseModel with id, created_at, updated_at fields
+- Implement User model
+- Implement Profile model
+- Create Workspace model for multi-tenancy
+- Create Organization model
+- Implement Role model
+- Implement Permission model
+- Create initial database migration
+- Write model unit tests
+- Document model relationships
+
+## Acceptance Criteria
+- Core models exist and are related properly
+- Migrations generate without errors
+- Models follow OOP structure and ARCH-01 guidelines
+- Tests verify relationships and constraints
+
+## Key Requirements Covered
+✅ Requirement #5: OOP Programming
+✅ Requirement #7: ORM & Database
+
+## Story Points: 6
+## Dependencies: ARCH-01",2026-04-30,2026-05-03,Sprint 1,To Do,High,6,"backend,db",ARCH-01
+AUTH-02: Login + JWT,Engji,"## Goal
+Implement JWT-based authentication with login endpoint and token refresh mechanism.
+
+## Description
+Create the login system that authenticates users and provides JWT tokens for accessing protected endpoints. All endpoints are RESTful over HTTP/HTTPS (Requirement #2).
+
+## Tasks
+- Create LoginSerializer
+- Implement POST /api/auth/login (HTTP/HTTPS)
+- Generate JWT access and refresh tokens
+- Implement POST /api/auth/refresh
+- Implement POST /api/auth/logout
+- Create JWT authentication class for DRF
+- Add JWT to all protected endpoints
+- Write tests for login flow
+
+## Acceptance Criteria
+- User can login and receive JWT tokens
+- Protected endpoints require valid JWT
+- Tokens expire and refresh correctly
+- Swagger documentation is complete
+
+## Key Requirements Covered
+✅ Requirement #2: HTTP/HTTPS Communication
+✅ Requirement #8: Authentication & Authorization
+
+## Story Points: 4
+## Dependencies: AUTH-01",2026-05-03,2026-05-06,Sprint 1,To Do,High,4,"backend,auth",AUTH-01
+MIDDLEWARE-01: Logging + Auth,Erza,"## Goal
+Implement middleware for request logging and JWT authentication enforcement.
+
+## Description
+Create middleware that logs all API requests and enforces authentication. Integrates with AUTH-01 and AUTH-02.
+
+## Tasks
+- Create RequestLoggingMiddleware
+- Log request metadata (method, endpoint, user_id)
+- Log response status and timing
+- Create JWT authentication middleware
+- Implement RBAC checks
+- Add request ID tracking
+- Write middleware tests
+
+## Acceptance Criteria
+- All requests are logged
+- Unauthenticated requests are rejected
+- Middleware integrates with JWT auth flow
+- Tests verify logging and auth enforcement
+
+## Story Points: 5
+## Dependencies: AUTH-01, AUTH-02",2026-05-03,2026-05-05,Sprint 1,To Do,Medium,5,"backend,middleware","AUTH-01,AUTH-02"
+FE-01: React + Context Setup,Edonita,"## Goal
+Initialize the React frontend with Context API, routing, and API client configuration.
+
+## Description
+Set up the foundational frontend architecture. All API calls will use HTTP/HTTPS REST endpoints from backend (Requirement #2).
+
+## Tasks
+- Initialize React project
+- Configure React Router
+- Create AuthContext
+- Create API client (axios)
+- Configure environment variables
+- Build layout components
+
+## Acceptance Criteria
+- React app runs
+- Context API works
+- API client can call backend endpoints
+
+## Story Points: 5
+## Dependencies: PM-01",2026-04-29,2026-04-30,Sprint 1,To Do,High,5,"frontend,react",PM-01
+FE-02: Auth UI,Edonita,"## Goal
+Build login and registration user interface components.
+
+## Description
+Create UI for authentication and integrate with RESTful endpoints over HTTP/HTTPS.
+
+## Tasks
+- Build Register/Login pages
+- Integrate POST /api/auth/register (AUTH-01)
+- Integrate POST /api/auth/login (AUTH-02)
+- Store JWT tokens in Context/localStorage
+- Implement logout and redirects
+
+## Acceptance Criteria
+- Users can register and login
+- Tokens are stored securely
+- UI follows REST API flow
+
+## Story Points: 5
+## Dependencies: AUTH-01, AUTH-02",2026-05-07,2026-05-09,Sprint 1,To Do,High,5,"frontend,auth","AUTH-01,AUTH-02"
+DB-02: 20+ Models + Migration,Leona,"## Goal
+Expand database to include 20+ production models with complete migration strategy.
+
+## Description
+Create comprehensive data models covering all aspects of the project management system. Models follow OOP structure and ORM best practices.
+
+## Tasks
+- Create Project, Task, Comment, ActivityLog, Notification, Attachment
+- Create AIRequest, CacheEntity, TeamMember, Subscription, Integration
+- Create Label, TaskLabel, ProjectMember, WorkspaceInvite, AuditLog
+- Add indexes and constraints
+- Write comprehensive migrations
+
+## Acceptance Criteria
+- 20+ models created and related
+- Migrations apply cleanly
+- Models follow OOP structure (ARCH-01)
+- Tests verify relationships and constraints
+
+## Story Points: 7
+## Dependencies: DB-01",2026-05-04,2026-05-07,Sprint 1,To Do,High,7,"backend,db",DB-01
+MT-01: Multi-Tenancy Data Isolation,Leona,"## Goal
+Implement data isolation for multi-tenant architecture.
+
+## Description
+Ensure complete data isolation between workspaces. All queries filter by workspace_id.
+
+## Tasks
+- Create TenantQuerySet
+- Implement tenant middleware
+- Apply workspace filtering in models
+- Add tenant permission checks
+- Write isolation tests
+
+## Acceptance Criteria
+- Users cannot access other tenants' data
+- All endpoints respect tenant boundaries
+- Tests prove isolation
+
+## Story Points: 5
+## Dependencies: DB-02",2026-05-10,2026-05-12,Sprint 2,To Do,High,5,"backend,tenant",DB-02
+API-01: CRUD APIs,Engji,"## Goal
+Implement basic CRUD endpoints for core resources.
+
+## Description
+Build RESTful API endpoints over HTTP/HTTPS (Requirement #2) using DRF (Requirement #4).
+
+## Tasks
+- Create Project CRUD endpoints (GET, POST, PUT, DELETE)
+- Create Task CRUD endpoints
+- Create Comment CRUD endpoints
+- Create ActivityLog read endpoint
+- Add pagination, sorting, filtering
+- Implement permissions and validation
+- Write tests
+- Document endpoints in Swagger
+
+## Acceptance Criteria
+- CRUD endpoints work correctly over HTTP/HTTPS
+- REST conventions followed
+- Tests pass and Swagger docs complete
+
+## Key Requirements Covered
+✅ Requirement #2: HTTP/HTTPS Communication
+✅ Requirement #3: 20+ Endpoints
+✅ Requirement #4: RESTful API Framework
+
+## Story Points: 6
+## Dependencies: DB-02",2026-05-08,2026-05-11,Sprint 2,To Do,High,6,"backend,api",DB-02
+CACHE-01: Redis,Fatlinda,"## Goal
+Integrate Redis for caching frequently accessed data.
+
+## Description
+Implement caching strategy for REST endpoints to improve response times.
+
+## Tasks
+- Configure Redis
+- Cache project/task lists
+- Add invalidation rules
+- Write cache tests
+
+## Acceptance Criteria
+- Cache improves performance
+- Data is consistent after invalidation
+- Tests pass
+
+## Story Points: 5
+## Dependencies: API-01",2026-05-12,2026-05-14,Sprint 2,To Do,Medium,5,"backend,redis",API-01
+TEST-01: Unit Tests,Leona,"## Goal
+Write unit tests for models, serializers, permissions, and business logic.
+
+## Description
+Achieve 80%+ coverage and validate critical backend functionality.
+
+## Tasks
+- Test models and serializers
+- Test permissions and auth flow
+- Test multi-tenant isolation
+- Test cache invalidation
+- Configure coverage reporting
+
+## Acceptance Criteria
+- 80%+ coverage
+- Tests pass reliably
+- CI runs tests
+
+## Story Points: 5
+## Dependencies: API-01",2026-05-12,2026-05-14,Sprint 2,To Do,Medium,5,"testing",API-01
+FE-03: Dashboard,Engji,"## Goal
+Build dashboard UI with project statistics and recent activity.
+
+## Description
+Consumes REST endpoints from API-01 over HTTP/HTTPS.
+
+## Endpoint Dependencies
+- GET /api/projects/
+- GET /api/tasks/
+- GET /api/activity-logs/
+
+## Tasks
+- Build dashboard UI
+- Integrate API data
+- Add charts and loading states
+
+## Acceptance Criteria
+- Dashboard shows real API data
+- Handles errors gracefully
+
+## Story Points: 5
+## Dependencies: FE-02, API-01",2026-05-08,2026-05-12,Sprint 2,To Do,Medium,5,"frontend","FE-02,API-01"
+FE-04: Task Board,Fatlinda,"## Goal
+Implement Kanban task board.
+
+## Description
+Uses API-01 endpoints over HTTP/HTTPS. Uses only basic filtering from API-01 (no dependency on API-03).
+
+## Endpoint Dependencies
+- GET /api/tasks/
+- PATCH /api/tasks/{id}/
+- POST /api/tasks/
+
+## Acceptance Criteria
+- Kanban board displays and updates tasks
+- Drag and drop or status change works
+
+## Story Points: 5
+## Dependencies: API-01",2026-05-12,2026-05-14,Sprint 2,To Do,High,5,"frontend,tasks",API-01
+CI-01: GitHub Actions,Fatlinda,"## Goal
+Set up CI pipeline for tests, linting, and builds.
+
+## Description
+Ensure GitHub Actions runs on every push/PR.
+
+## Tasks
+- Create test workflow
+- Create lint workflow
+- Add frontend build workflow
+- Enforce PR checks
+
+## Acceptance Criteria
+- CI runs on every push/PR
+- Failed tests block merges
+
+## Story Points: 5
+## Dependencies: PM-01",2026-05-09,2026-05-11,Sprint 2,To Do,Medium,5,"ci",PM-01
+API-02: Extra Endpoints,Engji,"## Goal
+Implement additional 15+ endpoints to reach minimum of 20 total endpoints.
+
+## Description
+Build REST endpoints over HTTP/HTTPS following REST conventions.
+
+## Tasks
+- Create endpoints for workspaces, roles, permissions, notifications, users, invites
+- Add health and metrics endpoints
+- Document all endpoints in Swagger
+- Write tests
+
+## Acceptance Criteria
+- 20+ endpoints total
+- All endpoints use HTTP/HTTPS and REST verbs
+- Swagger documentation complete
+
+## Key Requirements Covered
+✅ Requirement #2: HTTP/HTTPS Communication
+✅ Requirement #3: 20+ Endpoints
+
+## Story Points: 5
+## Dependencies: API-01",2026-05-12,2026-05-14,Sprint 2,To Do,High,5,"backend,api",API-01
+FE-05: Role UI,Edonita,"## Goal
+Implement role-based access control UI.
+
+## Description
+Show/hide UI components based on roles defined in AUTH-02.
+
+## Acceptance Criteria
+- UI components are shown/hidden based on user role
+- Role changes are reflected immediately
+
+## Story Points: 3
+## Dependencies: AUTH-02",2026-05-13,2026-05-14,Sprint 2,To Do,Medium,3,"frontend,roles",AUTH-02
+TEST-02: E2E,Fatlinda,"## Goal
+Create end-to-end tests for critical workflows.
+
+## Acceptance Criteria
+- E2E tests cover login, task creation, and dashboard flows
+- Tests pass in CI environment
+
+## Story Points: 6
+## Dependencies: FE-03, FE-04, AUTH-02, API-01",2026-05-13,2026-05-14,Sprint 2,To Do,Medium,6,"testing,e2e","FE-03,FE-04,AUTH-02,API-01"
+API-03: Search + Filtering,Engji,"## Goal
+Implement advanced search and filtering endpoints.
+
+## Description
+REST endpoints over HTTP/HTTPS for filtering tasks, projects, comments.
+
+## Tasks
+- Implement search endpoint
+- Add filters for status/priority/assignee/date
+- Add pagination and sorting
+- Write tests
+
+## Acceptance Criteria
+- Search works with multiple filters
+- REST responses are correct
+
+## Key Requirements Covered
+✅ Requirement #2: HTTP/HTTPS Communication
+✅ Requirement #20: Search & Filtering
+
+## Story Points: 5
+## Dependencies: API-02",2026-05-15,2026-05-17,Sprint 3,To Do,Medium,5,"backend,api,search",API-02
+AI-01: OpenAI + Celery,Erza,"## Goal
+Integrate OpenAI API with Celery for async AI features.
+
+## Description
+Build AI endpoints for chatbot, summarization, and priority suggestion.
+
+## Tasks
+- Configure Celery + Redis
+- Create OpenAI service
+- Create AI endpoints
+- Write tests and Swagger docs
+
+## Acceptance Criteria
+- AI endpoints respond correctly
+- Tasks run asynchronously
+- Results stored in DB
+
+## Story Points: 7
+## Dependencies: API-02",2026-05-14,2026-05-17,Sprint 3,To Do,High,7,"backend,ai,celery",API-02
+ASYNC-01: Email + Jobs,Erza,"## Goal
+Implement background job processing for emails and notifications.
+
+## Acceptance Criteria
+- Emails are sent asynchronously via Celery
+- Background jobs complete reliably
+- Failed jobs are retried
+
+## Story Points: 6
+## Dependencies: AI-01",2026-05-17,2026-05-19,Sprint 3,To Do,Medium,6,"backend,async",AI-01
+FE-06: AI UI,Edonita,"## Goal
+Build AI UI for chatbot, summarization, and suggestions.
+
+## Acceptance Criteria
+- AI chat interface is functional
+- Summarization and suggestions are displayed
+- Loading states are handled
+
+## Story Points: 5
+## Dependencies: AI-01",2026-05-17,2026-05-19,Sprint 3,To Do,Medium,5,"frontend,ai",AI-01
+DOC-01: Swagger,Leona,"## Goal
+Document all REST endpoints using Swagger.
+
+## Acceptance Criteria
+- All API endpoints are documented in Swagger
+- Swagger UI is accessible at /api/docs/
+- Request/response schemas are complete
+
+## Story Points: 4
+## Dependencies: API-01, API-02",2026-05-15,2026-05-17,Sprint 3,To Do,Medium,4,"docs,swagger","API-01,API-02"
+DOC-02: README,Fatlinda,"## Goal
+Create complete project documentation.
+
+## Acceptance Criteria
+- README covers setup, usage, and architecture
+- All team members and contributions are listed
+- Deployment instructions are included
+
+## Story Points: 5
+## Dependencies: TEST-02, DOC-01",2026-05-18,2026-05-19,Sprint 3,To Do,Low,5,"docs","TEST-02,DOC-01"
+FINAL-01: Final Integration,"Erza,Edonita,Leona,Engji,Fatlinda","## Goal
+Conduct final integration and verify all 20 course requirements.
+
+## Description
+Perform system-wide validation across backend, frontend, tests, and documentation.
+
+## Key Requirements Covered
+✅ All 20 requirements verified explicitly
+
+## Acceptance Criteria
+- All 20 course requirements are verified
+- System passes end-to-end tests
+- Documentation is complete
+- Demo is ready for presentation
+
+## Story Points: 8
+## Dependencies: DOC-02, ASYNC-01, FE-06, TEST-01, API-03",2026-05-20,2026-05-20,Sprint 3,To Do,High,8,"final","DOC-02,ASYNC-01,FE-06,TEST-01,API-03"
