@@ -1,0 +1,109 @@
+name: Bulk Add Existing Issues to CollabAI Project
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_limit:
+        description: "Maximum number of open issues to process (0 = no limit)"
+        required: false
+        type: number
+        default: 200
+      dry_run:
+        description: "Dry run only (list issues, no API calls)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  issues: read
+  contents: read
+
+jobs:
+  bulk-add-to-project:
+    name: Bulk add all open issues to CollabAI project board
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_OWNER: erzaduraku
+      PROJECT_NUMBER: "8"
+
+    steps:
+      - name: List open issues
+        id: list-issues
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          LIMIT="${{ inputs.issue_limit }}"
+          if [ "${LIMIT}" = "0" ]; then
+            LIMIT_FLAG=""
+          else
+            LIMIT_FLAG="--limit ${LIMIT}"
+          fi
+          echo "Fetching open issues (limit: ${LIMIT:-all}) from ${{ github.repository }}..."
+          gh issue list \
+            --repo "${{ github.repository }}" \
+            --state open \
+            ${LIMIT_FLAG} \
+            --json number,title,url \
+            --template '{{range .}}{{.number}} | {{.title}} | {{.url}}{{"\n"}}{{end}}' \
+            | tee /tmp/open_issues.txt
+          ISSUE_COUNT=$(wc -l < /tmp/open_issues.txt)
+          echo "Found ${ISSUE_COUNT} open issue(s)."
+          echo "issue_count=${ISSUE_COUNT}" >> "$GITHUB_OUTPUT"
+
+      - name: Add issues to project (dry run)
+        if: ${{ inputs.dry_run == true }}
+        run: |
+          echo "DRY RUN – would add the following issues to CollabAI project (ID 8):"
+          cat /tmp/open_issues.txt
+
+      - name: Add issues to project
+        if: ${{ inputs.dry_run != true }}
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          ADDED=0
+          FAILED=0
+          while IFS='|' read -r number title url; do
+            # Trim whitespace
+            url=$(echo "$url" | xargs)
+            number=$(echo "$number" | xargs)
+            title=$(echo "$title" | xargs)
+            if [ -z "$url" ]; then
+              continue
+            fi
+            echo "Adding issue #${number}: ${title} ..."
+            if gh project item-add "${PROJECT_NUMBER}" \
+                --owner "${PROJECT_OWNER}" \
+                --url "${url}" 2>/dev/null; then
+              echo "  ✅ Added #${number}"
+              ADDED=$((ADDED + 1))
+            else
+              echo "  ⚠️  Skipped #${number} (may already be in project or permission error)"
+              FAILED=$((FAILED + 1))
+            fi
+          done < /tmp/open_issues.txt
+          echo ""
+          echo "Done. Added: ${ADDED}, Skipped/Failed: ${FAILED}"
+          echo "added=${ADDED}" >> "$GITHUB_OUTPUT"
+          echo "skipped=${FAILED}" >> "$GITHUB_OUTPUT"
+        id: add-issues
+
+      - name: Summary
+        if: always()
+        env:
+          ISSUE_COUNT: ${{ steps.list-issues.outputs.issue_count }}
+          ADDED: ${{ steps.add-issues.outputs.added }}
+          SKIPPED: ${{ steps.add-issues.outputs.skipped }}
+        run: |
+          echo "## Bulk Add to Project Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Repository | \`${{ github.repository }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Triggered by | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Open issues found | ${ISSUE_COUNT} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Added | ${ADDED:-N/A (dry run)} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Skipped/Failed | ${SKIPPED:-N/A (dry run)} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dry run | ${{ inputs.dry_run }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "View project board: [CollabAI](https://github.com/users/erzaduraku/projects/8/views/1)" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,48 @@
+name: Add Issues to CollabAI Project
+
+on:
+  issues:
+    types: [opened, reopened]
+
+permissions:
+  issues: read
+  contents: read
+
+jobs:
+  add-to-project:
+    name: Add issue to CollabAI project board
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_OWNER: erzaduraku
+      PROJECT_NUMBER: "8"
+
+    steps:
+      - name: Add issue to project
+        id: add-issue
+        env:
+          GH_TOKEN: ${{ secrets.PROJECT_TOKEN || secrets.GITHUB_TOKEN }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+        run: |
+          if gh project item-add "${PROJECT_NUMBER}" \
+              --owner "${PROJECT_OWNER}" \
+              --url "${ISSUE_URL}" 2>/dev/null; then
+            echo "status=added" >> "$GITHUB_OUTPUT"
+          else
+            echo "⚠️  Issue may already be in the project or a permission error occurred."
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Summary
+        if: always()
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ADD_STATUS: ${{ steps.add-issue.outputs.status }}
+        run: |
+          echo "## Add to Project Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Issue | [#${ISSUE_NUMBER}](${ISSUE_URL}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${ADD_STATUS} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Project | [CollabAI](https://github.com/users/erzaduraku/projects/8/views/1) |" >> $GITHUB_STEP_SUMMARY
