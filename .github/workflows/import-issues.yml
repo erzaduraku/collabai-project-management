@@ -1,0 +1,95 @@
+name: Import Issues from CSV
+
+on:
+  workflow_dispatch:
+    inputs:
+      assignee_edonita:
+        description: "GitHub username for Edonita (leave blank to skip)"
+        required: false
+        default: ""
+      assignee_leona:
+        description: "GitHub username for Leona (leave blank to skip)"
+        required: false
+        default: ""
+      assignee_engji:
+        description: "GitHub username for Engji (leave blank to skip)"
+        required: false
+        default: ""
+      assignee_fatlinda:
+        description: "GitHub username for Fatlinda (leave blank to skip)"
+        required: false
+        default: ""
+      dry_run:
+        description: "Dry run only (validate CSV, no API calls)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  import-issues:
+    name: Import project tasks into GitHub Issues
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate CSV
+        run: |
+          python3 - <<'EOF'
+          import csv, sys
+          from pathlib import Path
+          csv_path = Path("tasks.csv")
+          if not csv_path.exists():
+              print("ERROR: tasks.csv not found", file=sys.stderr)
+              sys.exit(1)
+          with csv_path.open() as fh:
+              reader = csv.DictReader(fh)
+              rows = list(reader)
+          print(f"✓ tasks.csv is valid – {len(rows)} tasks found")
+          for row in rows:
+              if not row.get("Title","").strip():
+                  print(f"WARNING: empty title in row: {row}", file=sys.stderr)
+          EOF
+
+      - name: Import issues (dry-run check)
+        if: ${{ inputs.dry_run == true }}
+        run: |
+          echo "DRY RUN – skipping actual API calls."
+          echo "CSV validated successfully. Set dry_run=false to import."
+
+      - name: Import issues into GitHub
+        if: ${{ inputs.dry_run != true }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          ASSIGNEE_ERZA: erzaduraku
+          ASSIGNEE_EDONITA: ${{ inputs.assignee_edonita }}
+          ASSIGNEE_LEONA: ${{ inputs.assignee_leona }}
+          ASSIGNEE_ENGJI: ${{ inputs.assignee_engji }}
+          ASSIGNEE_FATLINDA: ${{ inputs.assignee_fatlinda }}
+        run: |
+          python3 .github/scripts/import_issues.py
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Import Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Repository | \`${{ github.repository }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Triggered by | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dry run | ${{ inputs.dry_run }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "View issues: https://github.com/${{ github.repository }}/issues" >> $GITHUB_STEP_SUMMARY
+          echo "View milestones: https://github.com/${{ github.repository }}/milestones" >> $GITHUB_STEP_SUMMARY
