@@ -26,6 +26,7 @@ GRAPHQL_URL = "https://api.github.com/graphql"
 
 PROJECT_TITLE = "CollabAI Sprint Board"
 PROJECT_COLUMNS = ["To Do", "In Progress", "Review", "Done"]
+SPRINT_NAMES = ["Sprint 1", "Sprint 2", "Sprint 3"]
 
 
 def _gql(query: str, variables: dict | None = None) -> dict:
@@ -118,9 +119,35 @@ def add_column_option(project_id: str, field_id: str, name: str) -> str:
     raise RuntimeError(f"Could not find option '{name}' after creation")
 
 
-def get_repo_issue_node_ids(owner: str, repo: str) -> list[tuple[int, str]]:
-    """Return list of (issueNumber, nodeId) for all open issues."""
-    issues: list[tuple[int, str]] = []
+def create_sprint_field(project_id: str) -> tuple[str, dict[str, str]]:
+    """Create a 'Sprint' single-select field on the project; return (fieldId, {sprintName: optionId})."""
+    options = [{"name": s, "color": "GRAY", "description": ""} for s in SPRINT_NAMES]
+    data = _gql("""
+        mutation($projectId: ID!, $name: String!, $options: [ProjectV2SingleSelectFieldOptionInput!]!) {
+            createProjectV2Field(input: {
+                projectId: $projectId,
+                dataType: SINGLE_SELECT,
+                name: $name,
+                singleSelectOptions: $options
+            }) {
+                projectV2Field {
+                    ... on ProjectV2SingleSelectField {
+                        id
+                        options { id name }
+                    }
+                }
+            }
+        }
+    """, {"projectId": project_id, "name": "Sprint", "options": options})
+    field = data["createProjectV2Field"]["projectV2Field"]
+    option_map = {opt["name"]: opt["id"] for opt in field.get("options", [])}
+    print(f"  ✓ Created Sprint field (id={field['id']}) with options: {list(option_map.keys())}")
+    return field["id"], option_map
+
+
+def get_repo_issue_node_ids(owner: str, repo: str) -> list[tuple[int, str, str]]:
+    """Return list of (issueNumber, nodeId, milestoneTitle) for all open issues."""
+    issues: list[tuple[int, str, str]] = []
     cursor = None
     while True:
         vars_: dict = {"owner": owner, "repo": repo, "cursor": cursor}
@@ -129,14 +156,19 @@ def get_repo_issue_node_ids(owner: str, repo: str) -> list[tuple[int, str]]:
                 repository(owner: $owner, name: $repo) {
                     issues(first: 100, after: $cursor, states: OPEN) {
                         pageInfo { hasNextPage endCursor }
-                        nodes { number id }
+                        nodes {
+                            number
+                            id
+                            milestone { title }
+                        }
                     }
                 }
             }
         """, vars_)
         page = data["repository"]["issues"]
         for node in page["nodes"]:
-            issues.append((node["number"], node["id"]))
+            milestone_title = (node.get("milestone") or {}).get("title", "")
+            issues.append((node["number"], node["id"], milestone_title))
         if not page["pageInfo"]["hasNextPage"]:
             break
         cursor = page["pageInfo"]["endCursor"]
@@ -155,7 +187,7 @@ def add_issue_to_project(project_id: str, issue_node_id: str) -> str:
     return data["addProjectV2ItemById"]["item"]["id"]
 
 
-def set_item_status(
+def set_item_field_value(
     project_id: str, item_id: str, field_id: str, option_id: str
 ) -> None:
     _gql("""
@@ -209,16 +241,24 @@ def main() -> None:
 
     todo_option_id = existing_options.get("To Do", "")
 
+    print("\n[3b/5] Creating Sprint field and linking milestones…")
+    sprint_field_id, sprint_options = create_sprint_field(project_id)
+
     print("\n[4/5] Fetching open issues…")
     issues = get_repo_issue_node_ids(owner, repo)
     print(f"  Found {len(issues)} open issues")
 
     print("\n[5/5] Adding issues to project board…")
-    for number, node_id in issues:
+    for number, node_id, milestone_title in issues:
         item_id = add_issue_to_project(project_id, node_id)
         if todo_option_id:
-            set_item_status(project_id, item_id, field_id, todo_option_id)
-        print(f"  ✓ Added issue #{number}")
+            set_item_field_value(project_id, item_id, field_id, todo_option_id)
+        sprint_option_id = sprint_options.get(milestone_title, "")
+        if sprint_option_id:
+            set_item_field_value(project_id, item_id, sprint_field_id, sprint_option_id)
+            print(f"  ✓ Added issue #{number} → Sprint: {milestone_title}")
+        else:
+            print(f"  ✓ Added issue #{number} (no milestone assigned)")
         time.sleep(0.3)
 
     print("\n" + "=" * 60)

@@ -46,5 +46,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "View projects: https://github.com/${{ github.repository }}/projects" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The board includes a **Sprint** field linked to each issue's milestone (Sprint 1 / 2 / 3)." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           echo "> **Note:** If the workflow failed due to token permissions, create a PAT with" >> $GITHUB_STEP_SUMMARY
           echo "> \`repo\` + \`project\` scopes and store it as secret \`PROJECT_TOKEN\`." >> $GITHUB_STEP_SUMMARY
