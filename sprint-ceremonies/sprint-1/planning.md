@@ -1,11 +1,6 @@
-# Sprint Planning (Sprint 1)
+# Sprint 1 Planning
 
-> ⚠️ **This file is superseded.** The canonical sprint ceremony documents now live under [`sprint-ceremonies/`](sprint-ceremonies/README.md).
-> See [sprint-ceremonies/sprint-1/planning.md](sprint-ceremonies/sprint-1/planning.md) for the authoritative Sprint 1 planning document.
-
----
-
-> Fill out this document at the **beginning** of the sprint during the Sprint Planning ceremony.
+> Filled at the **beginning** of Sprint 1 during the Sprint Planning ceremony.
 
 ## Sprint Goal
 
@@ -17,11 +12,11 @@
 
 | Team Member | Available Hours | Notes |
 |-------------|-----------------|-------|
-| erzaduraku |  | Backend + coordination |
-| edonitagashi |  | Frontend + architecture doc |
-| LeonaZullufi |  | Database models + migrations |
-| engjiosmani |  | Auth (JWT) |
-| fatlindaosdautaj |  | Sprint 1: (no stories assigned) |
+| erzaduraku | | Backend + coordination |
+| edonitagashi | | Frontend + architecture doc |
+| LeonaZullufi | | Database models + migrations |
+| engjiosmani | | Auth (JWT) |
+| fatlindaosdautaj | | No stories assigned this sprint |
 
 ## Selected User Stories
 
@@ -32,7 +27,7 @@
 | AUTH-01 | Register API | 5 | erzaduraku |
 | DB-01 | Core Models | 6 | LeonaZullufi |
 | AUTH-02 | Login + JWT | 4 | engjiosmani |
-| MIDDLEWARE-01 | Logging + Auth | 5 | erzaduraku |
+| MIDDLEWARE-01 | Logging + Auth Middleware | 5 | erzaduraku |
 | FE-01 | React + Context Setup | 5 | edonitagashi |
 | FE-02 | Auth UI | 5 | edonitagashi |
 | DB-02 | 20+ Models + Migration | 7 | LeonaZullufi |
@@ -52,4 +47,5 @@
   - `AUTH-01` is a prerequisite for `AUTH-02`.
   - `DB-01` is a prerequisite for `DB-02`.
   - `AUTH-01` + `AUTH-02` are prerequisites for `FE-02` and `MIDDLEWARE-01`.
-- Sprint dates inferred from earliest Start Date (ARCH-01: 2026-04-28) to latest Due Date (DB-02: 2026-05-07).
+  - `PM-01` is a prerequisite for `ARCH-01` and `FE-01`.
+- Sprint dates: earliest Start Date 2026-04-28 (ARCH-01) → latest Due Date 2026-05-07 (DB-02).
