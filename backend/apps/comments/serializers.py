@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from apps.tasks.models import Task
-from common.workspace_access import user_can_access_workspace
+from common.tenant_access import user_can_access_organization
 
 from .models import ActivityLog, Comment
 
@@ -34,7 +34,7 @@ class CommentSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         user = getattr(request, 'user', None)
         organization = value.project.organization
-        if not user_can_access_workspace(user, organization):
+        if not user_can_access_organization(user, organization):
             raise serializers.ValidationError('Invalid task or access denied.')
         return value
 
