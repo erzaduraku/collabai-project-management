@@ -1,6 +1,6 @@
 # API endpoints
 
-**Canonical rule:** all product REST endpoints use prefix **`/api/v1`**. Document tooling lives at **`/api/docs/`** and **`/api/schema/`** (no version segment). GitHub Issues must copy paths from this file to avoid drift.
+**Canonical rule:** all product REST endpoints use prefix **`/api/v1`**. Document tooling lives at **`/api/docs/`** and **`/api/schema/`** (no version segment).
 
 Base URL (development): `http://127.0.0.1:8000/api/v1`
 
@@ -162,16 +162,6 @@ Body: `workspace_id`. **Success:** `202 Accepted` with Celery `task_id`.
 Returns last 50 `AIRequest` rows for the authenticated user.
 
 
-### Team Pulse
-
-| Method | Full URL |
-|--------|----------|
-| `GET` | `/api/v1/ai/team-pulse/?workspace_id=1` |
-| `PUT` | `/api/v1/ai/team-pulse/github/` |
-| `POST` | `/api/v1/ai/team-pulse/run/` |
-
-See Swagger tags `AI / Team Pulse`.
-
 ## Verified endpoints (extracted from OpenAPI schema on 2026-05-20)
 
 Summary: the running backend exposes 57 OpenAPI paths and 91 HTTP operations (GET/POST/PUT/PATCH/DELETE).
@@ -187,10 +177,6 @@ checklist of the documented REST operations (path — method — tag — summary
 - POST `/api/v1/ai/query/` — AI / RAG
 - POST `/api/v1/ai/reindex/` — AI / RAG
 - POST `/api/v1/ai/search/` — AI / RAG
-- GET `/api/v1/ai/team-pulse/` — AI / Team Pulse
-- GET `/api/v1/ai/team-pulse/github/` — AI / Team Pulse
-- PUT `/api/v1/ai/team-pulse/github/` — AI / Team Pulse
-- POST `/api/v1/ai/team-pulse/run/` — AI / Team Pulse
 - GET `/api/v1/audit/` — Audit logs — List audit logs
 - GET `/api/v1/audit/{id}/` — Audit logs — Retrieve audit log
 - POST `/api/v1/auth/login` — Authentication

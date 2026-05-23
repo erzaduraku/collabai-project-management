@@ -1,9 +1,11 @@
 from drf_spectacular.utils import OpenApiResponse, extend_schema
+from django.conf import settings
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.organizations.models import OrganizationMember
 from apps.tasks.models import Task
 from common.role_permissions import task_visibility_q
 from common.tenant_access import user_can_access_organization
@@ -36,8 +38,52 @@ class OrganizationRAGMixin:
                 raise PermissionError('You do not have access to this organization.')
 
 
-# Backward-compatible alias for team pulse imports
 WorkspaceRAGMixin = OrganizationRAGMixin
+
+
+class IsStaffOrOrgAdmin(IsAdminUser):
+    message = "Only staff users or organization admins can access AI configuration."
+
+    def has_permission(self, request, view):
+        if super().has_permission(request, view):
+            return True
+
+        user = getattr(request, "user", None)
+        if not user or not user.is_authenticated:
+            return False
+
+        organization_id = request.query_params.get("organization_id")
+        if not organization_id and request.method not in ("GET", "HEAD", "OPTIONS"):
+            organization_id = request.data.get("organization_id")
+        if not organization_id:
+            return False
+
+        try:
+            organization_id = int(organization_id)
+        except (TypeError, ValueError):
+            return False
+
+        return OrganizationMember.objects.filter(
+            organization_id=organization_id,
+            user=user,
+            role=OrganizationMember.ORG_ADMIN,
+        ).exists()
+
+
+@extend_schema(
+    tags=["AI / Config"],
+    responses={200: OpenApiResponse(description="AI provider configuration status")},
+)
+class AIConfigView(APIView):
+    permission_classes = [IsStaffOrOrgAdmin]
+
+    def get(self, request):
+        return Response(
+            {
+                "groq_configured": bool(settings.GROQ_API_KEY),
+                "model": settings.GROQ_MODEL,
+            }
+        )
 
 
 @extend_schema(

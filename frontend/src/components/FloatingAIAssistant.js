@@ -11,7 +11,7 @@ function FloatingAIAssistant() {
   const chatRef = useRef(null);
   const [open, setOpen] = useState(false);
 
-  const hideWidget = pathname === "/ai" || pathname.startsWith("/ai/team-pulse");
+  const hideWidget = pathname === "/ai";
 
   useEffect(() => {
     if (!open) return undefined;

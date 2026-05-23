@@ -404,18 +404,6 @@ else:
     ).lower() == 'true'
 CELERY_TASK_EAGER_PROPAGATES = True
 
-# Celery Beat — Team Pulse daily standup (9:00). Requires: celery -A config beat
-from celery.schedules import crontab  # noqa: E402
-
-TEAM_PULSE_STANDUP_HOUR = int(os.environ.get('TEAM_PULSE_STANDUP_HOUR', '9'))
-
-CELERY_BEAT_SCHEDULE = {
-    'team-pulse-daily-standup': {
-        'task': 'apps.ai_assistant.tasks_team_pulse.run_daily_standup_agent',
-        'schedule': crontab(hour=TEAM_PULSE_STANDUP_HOUR, minute=0),
-    },
-}
-
 # --- Production Security Hardening Headers ---
 SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
 SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '0'))

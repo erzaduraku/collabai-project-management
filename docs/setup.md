@@ -30,7 +30,6 @@ Edit `backend/.env`:
 
 | Variable | Purpose |
 |----------|---------|
-| `GROQ_API_KEY` | LLM API key from [console.groq.com](https://console.groq.com) (chatbot, text analysis, team pulse) |
 | `GROQ_MODEL` | Default model (e.g. `llama-3.1-8b-instant`) |
 | `DB_HOST` | PostgreSQL host (default `localhost`) |
 | `DB_PORT` | PostgreSQL port (default `5432`) |
@@ -40,7 +39,6 @@ Edit `backend/.env`:
 | `SECRET_KEY` | Required for every backend start, including local development. Generate one with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
 | `REDIS_URL` | **Required for production caching** — list/dashboard cache + vector store |
 | `CACHE_DEFAULT_TIMEOUT` | List/dashboard TTL in seconds (default `300`) |
-| `CELERY_BROKER_URL` | Background jobs (reindex, standup) |
 
 Verify Groq connectivity:
 

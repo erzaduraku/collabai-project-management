@@ -5,7 +5,7 @@ import logging
 from celery import shared_task
 from django.apps import apps
 
-from .services.indexing import build_document, index_instance
+from .services.indexing import index_instance
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ def index_model_instance(self, app_label: str, model_name: str, pk: int) -> str 
         return None
 
     doc_key = index_instance(instance)
-    logger.info('Indexed %s:%s → %s', model_name, pk, doc_key)
+    logger.info("Indexed %s:%s -> %s", model_name, pk, doc_key)
     return doc_key
 
 
@@ -54,17 +54,8 @@ def reindex_organization(organization_id: int) -> int:
         index_instance(activity)
         count += 1
 
-    logger.info('Reindexed organization %s (%s documents)', organization_id, count)
+    logger.info("Reindexed organization %s (%s documents)", organization_id, count)
     return count
 
 
 reindex_workspace = reindex_organization
-
-
-# Team Pulse (workload + standup) — register Celery task names
-from .tasks_team_pulse import (  # noqa: E402
-    analyze_workspace_workload,
-    generate_workspace_standup,
-    run_daily_standup_agent,
-    run_nightly_workload_analysis,
-)

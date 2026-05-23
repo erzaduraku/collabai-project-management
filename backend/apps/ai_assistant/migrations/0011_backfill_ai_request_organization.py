@@ -3,13 +3,21 @@ from django.db import migrations
 
 def backfill_ai_request_organization(apps, schema_editor):
     AIRequest = apps.get_model('ai_assistant', 'AIRequest')
+    Task = apps.get_model('tasks', 'Task')
 
-    requests = AIRequest.objects.select_related('task__project').filter(
+    requests = AIRequest.objects.filter(
         organization__isnull=True,
-        task__project__organization_id__isnull=False,
+        task_id__isnull=False,
     )
     for ai_request in requests.iterator():
-        ai_request.organization_id = ai_request.task.project.organization_id
+        organization_id = (
+            Task.objects.filter(pk=ai_request.task_id)
+            .values_list('project__organization_id', flat=True)
+            .first()
+        )
+        if not organization_id:
+            continue
+        ai_request.organization_id = organization_id
         ai_request.save(update_fields=['organization'])
 
 

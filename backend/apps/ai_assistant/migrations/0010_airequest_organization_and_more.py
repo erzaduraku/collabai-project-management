@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ai_assistant', '0009_rename_ai_assistan_organiz_4c9e1a_idx_ai_assistan_organiz_45e7b0_idx_and_more'),
+        ('ai_assistant', '0001_initial'),
         ('organizations', '0005_update_org_member_roles_to_4role_rbac'),
         ('tasks', '0002_seed_default_task_statuses'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),

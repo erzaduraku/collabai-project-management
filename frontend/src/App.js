@@ -4,7 +4,6 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AIAssistant from "./pages/AIAssistant";
-import TeamPulse from "./pages/TeamPulse";
 import Projects from "./pages/Projects";
 import Organizations from "./pages/Organizations";
 import Invitations from "./pages/Invitations";
@@ -96,15 +95,6 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <SettingsPage />
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="/ai/team-pulse"
-                    element={
-                        <ProtectedRoute>
-                            <TeamPulse />
                         </ProtectedRoute>
                     }
                 />
